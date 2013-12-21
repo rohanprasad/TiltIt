@@ -51,13 +51,13 @@ public class GameActivity extends Activity implements SensorEventListener {
 		
 		float x = values[0];
 		float y = values[1];
-		float z = values[2];
-		Globals.x_tilt = x;
+		float z = values[2];		
 		
 		long t_now = System.currentTimeMillis();
-		if(t_now - last_update > 100)
+		if(t_now - last_update > 50)
 		{
-			System.out.println("Sensor activated, "+x+", "+y+", "+z);
+			double result =(x/(Math.sqrt(y*y +z*z)));
+			Globals.x_tilt =(float) Math.atan(result);
 			last_update = t_now;
 			my_game.sensors();
 		}
