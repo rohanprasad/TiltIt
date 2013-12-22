@@ -53,13 +53,14 @@ public class GameActivity extends Activity implements SensorEventListener {
 		float y = values[1];
 		float z = values[2];		
 		
+		my_game.sensors();
+		
 		long t_now = System.currentTimeMillis();
-		if(t_now - last_update > 50)
+		if(t_now - last_update > 500)
 		{
 			double result =(x/(Math.sqrt(y*y +z*z)));
 			Globals.x_tilt =(float) Math.atan(result);
 			last_update = t_now;
-			my_game.sensors();
 		}
 	}
 
@@ -76,7 +77,7 @@ public class GameActivity extends Activity implements SensorEventListener {
 		// TODO Auto-generated method stub
 		super.onResume();
 		
-		sensor_m.registerListener(this, sensor_m.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), sensor_m.SENSOR_DELAY_NORMAL);
+		sensor_m.registerListener(this, sensor_m.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), sensor_m.SENSOR_DELAY_UI);
 	}
 	
 	
