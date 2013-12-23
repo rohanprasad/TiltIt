@@ -1,8 +1,7 @@
 package mdg.iitr.tiltit;
 
-import java.math.RoundingMode;
-
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -21,7 +20,6 @@ public class Game extends View {
 	private Paint rod_paint;
 	private int scr_w;
 	private int scr_h;
-	private float tilts;
 	private float angles;
 	private int score;
 	private Matrix m;
@@ -30,8 +28,13 @@ public class Game extends View {
 	private float hl;
 	private float ht;
 	
-	private float prev_tilt ;
 	private float curr_tilt ;
+	
+    private SharedPreferences hi_score;
+    private SharedPreferences.Editor editors;
+    private String names = "h_score";
+    private int h_scores;
+	
 	
 	public Game(Context context) {
 		super(context);
@@ -60,6 +63,15 @@ public class Game extends View {
 		score = 0;
 		
 		playing = true;
+		
+		hi_score = getContext().getSharedPreferences("hi_score", Context.MODE_PRIVATE);
+        editors = hi_score.edit();
+        
+        if(hi_score.contains(names))
+        {
+        	h_scores = hi_score.getInt(names, 0);
+        }
+        
 	}
 	
 	
@@ -69,29 +81,6 @@ public class Game extends View {
 		// TODO Auto-generated method stub
 		super.onDraw(canvas);
 		
-		/*if (playing) 
-		{
-			score++;
-			tilts = Globals.x_tilt;
-			tilts *= 10;
-			if(angles >= 30 || angles <=-30)
-				playing = false;
-			if (tilts < 1 && tilts > -1) {
-				if (angles > 0)
-					angles -= 1;
-				else if (angles < 0)
-					angles += 1;
-				else
-					angles = 0f;
-			}
-			if (tilts > 0 && angles > (-30)) {
-				angles -= 1;
-			} else if (angles < 30) {
-				angles += 1;
-			}
-		}
-		else
-			angles = 180;*/
 		
 		if(curr_tilt < 0)
 			r_tilt = true;
@@ -116,29 +105,31 @@ public class Game extends View {
 				else if(angles!=-180)
 					angles-=10;
 				if(angles>=180 || angles <=-180)
+				{
 					playing = false;
+					score_update();
+				}
 			}
 				
 		}
 		
-		m.setTranslate((float)((scr_w-Hand.getWidth())/2 + (scr_w*0.02)) , (float)(scr_h*0.3) );	
-		m.postRotate(angles,(float)((scr_w-Hand.getWidth())/2 + (scr_w*0.02)),(float)(scr_h*0.3 + rod.getHeight()));
+		m.setTranslate((float)((scr_w-Hand.getWidth())/2 + (scr_w*0.03)) , (float)(scr_h*0.325) );	
+		m.postRotate(angles,(float)((scr_w-Hand.getWidth())/2 + (scr_w*0.04)),(float)(scr_h*0.325 + rod.getHeight()));
 		
 		
-		String show = "" + score;
+		String show = " " + score;
+		String show2 = " " + h_scores;
 		canvas.drawText("SCORE: ", (float)0.1*scr_w, 40f, Score_paint);
-		canvas.drawText(show, 100f, 100f, Score_paint);
+		canvas.drawText(show, (float)0.3*scr_w, 40f, Score_paint);
+		canvas.drawText("HI-SCORE: ", (float)0.1*scr_w, 80f, Score_paint);
+		canvas.drawText(show2, (float)0.4*scr_w, 80f, Score_paint);
+
 		canvas.drawBitmap(Hand,hl,ht, null);
 		canvas.drawBitmap(rod, m, null);
-						//((float) ((scr_w-Hand.getWidth())/2 + (scr_w*0.02)),	// left 
-						//(float) (scr_h*0.3),								// top 
-						//(float) ((scr_w-Hand.getWidth())/2 + (scr_w*0.05)),	// right
-						//(float) (scr_h-Hand.getHeight()),					// bottom 
-						//rod_paint);
-		canvas.drawBitmap(Plate, 
-						(float) ((scr_w-Hand.getWidth())/2 + (scr_w*0.035)) - Plate.getWidth()/2,//(float) ((scr_w-Hand.getWidth())/2 - (scr_w*0.1))/2, 
-						(float) (scr_h*0.3) - Plate.getHeight(),//(float) ((scr_h-Hand.getHeight()) + (scr_h*0.5)) - Plate.getHeight(),
-						null);
+		/*canvas.drawBitmap(Plate, 
+						(float) ((scr_w-Hand.getWidth())/2 + (scr_w*0.035)) - Plate.getWidth()/2, 
+						(float) (scr_h*0.3) - Plate.getHeight(),
+						null);*/
 	}
 
 
@@ -172,6 +163,22 @@ public class Game extends View {
 		return true;
 	}
 
+	public void score_update()
+	{
+		if(hi_score.contains(names))
+        {
+        	if(score >= hi_score.getInt(names, 0))
+        	{
+        		h_scores = score;
+        		editors.remove(names);
+        		editors.putInt(names, h_scores);
+        	}
+        }
+		else
+			editors.putInt(names, h_scores);
+
+		editors.commit();
+	}
 
 
 	public void sensors()
