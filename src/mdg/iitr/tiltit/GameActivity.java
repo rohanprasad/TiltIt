@@ -16,6 +16,7 @@ public class GameActivity extends Activity implements SensorEventListener {
         private SensorManager sensor_m;
         private long last_update;
         private Game my_game;
+        
 
         
         @Override
@@ -60,14 +61,19 @@ public class GameActivity extends Activity implements SensorEventListener {
                 float y = values[1];
                 float z = values[2];                
                 
-                my_game.sensors();
+                
                 
                 long t_now = System.currentTimeMillis();
-                if(t_now - last_update > 500)
+                if(t_now - last_update > 50)
                 {
                         double result =(x/(Math.sqrt(y*y +z*z)));
-                        Globals.x_tilt =(float) Math.atan(result);
-                        last_update = t_now;
+                        if(Globals.x_tilt - (float) Math.atan(result) > 0.25 || Globals.x_tilt - (float) Math.atan(result) <-0.25)
+                        {
+                        	Globals.x_tilt =(float) Math.atan(result);
+                        	last_update = t_now;
+                        	
+                        }
+                        my_game.sensors();
                 }
         }
 

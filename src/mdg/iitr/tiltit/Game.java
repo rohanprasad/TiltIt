@@ -158,8 +158,9 @@ public class Game extends View {
 			playing = true;
 			angles = 0;
 			score = 0;
+			invalidate();
 		}
-		invalidate();
+		
 		return true;
 	}
 
